@@ -1,6 +1,6 @@
 import React from 'react';
 import { useParams } from 'react-router-dom';
-import { User, Mail, Phone, MapPin, Calendar, Briefcase, Shield, PenTool as Tool, Users as UsersIcon, FileText, CheckCircle, AlertCircle, Clock, ChevronLeft } from 'lucide-react';
+import { User, Mail, Phone, MapPin, Calendar, Briefcase, Shield, PenTool as Tool, Users as UsersIcon, FileText, CheckCircle, AlertCircle, Clock, ChevronLeft, MapPinned } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 // This would typically come from an API
@@ -20,6 +20,32 @@ const agent = {
   contractType: 'Full-time',
   joinDate: '2023-06-15',
   supervisor: 'John Smith',
+  lastLocation: {
+    latitude: 40.7128,
+    longitude: -74.0060,
+    lastUpdated: '2024-03-20 13:45',
+    address: '123 Farm Road, Agricultural District'
+  },
+  projects: [
+    {
+      id: 1,
+      name: 'Spring Planting Initiative',
+      status: 'In Progress',
+      deadline: '2024-04-15'
+    },
+    {
+      id: 2,
+      name: 'Crop Monitoring Program',
+      status: 'Active',
+      deadline: '2024-06-30'
+    },
+    {
+      id: 3,
+      name: 'Harvest Planning',
+      status: 'Pending',
+      deadline: '2024-08-15'
+    }
+  ],
   assignedFarmers: [
     { id: 1, name: 'Robert Wilson', location: 'Eastern Farm', crops: 'Corn, Soybeans' },
     { id: 2, name: 'Maria Garcia', location: 'Riverside Fields', crops: 'Wheat' },
@@ -74,8 +100,35 @@ const AgentProfile = () => {
             Edit Profile
           </button>
           <button className="px-4 py-2 text-white bg-red-600 rounded-lg hover:bg-red-700">
-            Deactivate Agent
+            Remove Agent
           </button>
+        </div>
+      </div>
+
+      {/* Recent Activity */}
+      <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-200">
+        <h3 className="text-lg font-medium text-gray-900 mb-4">Recent Activity</h3>
+        <div className="space-y-4">
+          {agent.activityLog.map((activity, index) => (
+            <div key={index} className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+              <div className="flex items-center">
+                {getStatusIcon(activity.status)}
+                <div className="ml-3">
+                  <div className="font-medium text-gray-900">{activity.activity}</div>
+                  <div className="text-sm text-gray-500">
+                    {new Date(activity.date).toLocaleDateString()}
+                  </div>
+                </div>
+              </div>
+              <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                activity.status === 'completed' ? 'bg-green-100 text-green-800' :
+                activity.status === 'in-progress' ? 'bg-blue-100 text-blue-800' :
+                'bg-yellow-100 text-yellow-800'
+              }`}>
+                {activity.status}
+              </span>
+            </div>
+          ))}
         </div>
       </div>
 
@@ -117,6 +170,17 @@ const AgentProfile = () => {
             </div>
 
             <div className="mt-6 pt-6 border-t border-gray-200">
+              <h3 className="text-sm font-medium text-gray-900 mb-4">Last Known Location</h3>
+              <div className="flex items-start space-x-3">
+                <MapPinned className="w-5 h-5 text-blue-500 mt-1" />
+                <div>
+                  <p className="text-sm text-gray-900">{agent.lastLocation.address}</p>
+                  <p className="text-xs text-gray-500">Last updated: {agent.lastLocation.lastUpdated}</p>
+                </div>
+              </div>
+            </div>
+
+            <div className="mt-6 pt-6 border-t border-gray-200">
               <h3 className="text-sm font-medium text-gray-900 mb-4">Verification Status</h3>
               <div className="flex items-center">
                 <Shield className="w-5 h-5 text-green-500 mr-2" />
@@ -128,6 +192,30 @@ const AgentProfile = () => {
 
         {/* Main Content */}
         <div className="lg:col-span-2 space-y-6">
+          {/* Projects */}
+          <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-200">
+            <h3 className="text-lg font-medium text-gray-900 mb-4">Assigned Projects</h3>
+            <div className="space-y-4">
+              {agent.projects.map((project) => (
+                <div key={project.id} className="p-4 bg-gray-50 rounded-lg">
+                  <div className="flex items-center justify-between mb-2">
+                    <h4 className="font-medium text-gray-900">{project.name}</h4>
+                    <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                      project.status === 'Active' ? 'bg-green-100 text-green-800' :
+                      project.status === 'In Progress' ? 'bg-blue-100 text-blue-800' :
+                      'bg-yellow-100 text-yellow-800'
+                    }`}>
+                      {project.status}
+                    </span>
+                  </div>
+                  <p className="text-sm text-gray-500">
+                    Deadline: {new Date(project.deadline).toLocaleDateString()}
+                  </p>
+                </div>
+              ))}
+            </div>
+          </div>
+
           {/* Performance Overview */}
           <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-200">
             <h3 className="text-lg font-medium text-gray-900 mb-4">Performance Overview</h3>
@@ -216,33 +304,6 @@ const AgentProfile = () => {
                   <button className="text-sm text-blue-600 hover:text-blue-700">
                     Download
                   </button>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          {/* Activity Log */}
-          <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-200">
-            <h3 className="text-lg font-medium text-gray-900 mb-4">Recent Activity</h3>
-            <div className="space-y-4">
-              {agent.activityLog.map((activity, index) => (
-                <div key={index} className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
-                  <div className="flex items-center">
-                    {getStatusIcon(activity.status)}
-                    <div className="ml-3">
-                      <div className="font-medium text-gray-900">{activity.activity}</div>
-                      <div className="text-sm text-gray-500">
-                        {new Date(activity.date).toLocaleDateString()}
-                      </div>
-                    </div>
-                  </div>
-                  <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                    activity.status === 'completed' ? 'bg-green-100 text-green-800' :
-                    activity.status === 'in-progress' ? 'bg-blue-100 text-blue-800' :
-                    'bg-yellow-100 text-yellow-800'
-                  }`}>
-                    {activity.status}
-                  </span>
                 </div>
               ))}
             </div>
