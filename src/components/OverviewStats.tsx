@@ -1,44 +1,56 @@
 import React from 'react';
-import { Users, DollarSign, CheckSquare, TrendingUp } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { Users, DollarSign, FileText, Trophy, Package, Clock } from 'lucide-react';
 
 const stats = [
   {
-    label: 'Total Agents',
-    value: '2,345',
+    label: 'Total Sales',
+    value: '234,567',
     change: '+12%',
-    icon: Users,
-    color: 'blue'
+    icon: Trophy,
+    color: 'blue',
+    path: '/sales',
+    lastUpdate: '2024-03-20 14:30'
   },
   {
-    label: 'Monthly Revenue',
-    value: '$234,567',
+    label: 'Active Agents',
+    value: '2,345',
     change: '+23%',
-    icon: DollarSign,
-    color: 'green'
+    icon: Users,
+    color: 'green',
+    path: '/agents',
+    lastUpdate: '2024-03-20 14:30'
   },
   {
-    label: 'Active Tasks',
-    value: '189',
-    change: '-5%',
-    icon: CheckSquare,
-    color: 'purple'
+    label: 'Unread Reports',
+    value: '28',
+    change: '+5',
+    icon: FileText,
+    color: 'purple',
+    path: '/reports',
+    lastUpdate: '2024-03-20 14:30'
   },
   {
-    label: 'Performance',
-    value: '94%',
-    change: '+2%',
-    icon: TrendingUp,
-    color: 'orange'
+    label: 'Input Overview',
+    value: '1,234',
+    change: '+8%',
+    icon: Package,
+    color: 'orange',
+    path: '/inputs',
+    lastUpdate: '2024-03-20 14:30'
   }
 ];
 
 const OverviewStats = () => {
+  const navigate = useNavigate();
+
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
       {stats.map((stat, index) => (
         <div
           key={index}
-          className="bg-white rounded-xl shadow-sm p-6 border border-gray-200"
+          className="bg-white rounded-xl shadow-sm p-6 border border-gray-200 cursor-pointer hover:shadow-md transition-shadow"
+          onClick={() => navigate(stat.path)}
         >
           <div className="flex items-center justify-between mb-4">
             <div className={`p-2 rounded-lg bg-${stat.color}-100`}>
@@ -54,6 +66,10 @@ const OverviewStats = () => {
             {stat.value}
           </h3>
           <p className="text-sm text-gray-500">{stat.label}</p>
+          <div className="mt-3 flex items-center text-xs text-gray-400">
+            <Clock className="w-4 h-4 mr-1" />
+            <span>Last updated: {new Date(stat.lastUpdate).toLocaleString()}</span>
+          </div>
         </div>
       ))}
     </div>

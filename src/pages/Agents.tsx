@@ -2,6 +2,12 @@ import React, { useState } from 'react';
 import { Search, Filter, Plus, MapPin, Calendar, Briefcase, Shield, PenTool as Tool, Users as UsersIcon } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
+interface Project {
+  id: number;
+  name: string;
+  status: string;
+}
+
 interface Agent {
   id: number;
   name: string;
@@ -19,6 +25,8 @@ interface Agent {
   supervisor: string;
   assignedFarmers: number;
   issuedTools: string[];
+  projects: Project[];
+  archived?: boolean;
 }
 
 const agents: Agent[] = [
@@ -38,7 +46,11 @@ const agents: Agent[] = [
     joinDate: '2023-06-15',
     supervisor: 'John Smith',
     assignedFarmers: 45,
-    issuedTools: ['Tablet', 'GPS Device', 'Soil Testing Kit']
+    issuedTools: ['Tablet', 'GPS Device', 'Soil Testing Kit'],
+    projects: [
+      { id: 1, name: 'Spring Planting', status: 'Active' },
+      { id: 2, name: 'Crop Monitoring', status: 'In Progress' }
+    ]
   },
   {
     id: 2,
@@ -56,7 +68,10 @@ const agents: Agent[] = [
     joinDate: '2023-08-01',
     supervisor: 'Emma Wilson',
     assignedFarmers: 38,
-    issuedTools: ['Tablet', 'Moisture Meter']
+    issuedTools: ['Tablet', 'Moisture Meter'],
+    projects: [
+      { id: 3, name: 'Harvest Planning', status: 'Pending' }
+    ]
   },
   {
     id: 3,
@@ -74,7 +89,31 @@ const agents: Agent[] = [
     joinDate: '2023-09-15',
     supervisor: 'David Brown',
     assignedFarmers: 25,
-    issuedTools: ['Tablet']
+    issuedTools: ['Tablet'],
+    projects: []
+  }
+];
+
+const archivedAgents: Agent[] = [
+  {
+    id: 4,
+    name: 'James Wilson',
+    email: 'james.w@example.com',
+    region: 'South',
+    district: 'Southern District',
+    status: 'Archived',
+    verificationStatus: 'Verified',
+    performance: 88,
+    revenue: '$92,150',
+    tasks: 0,
+    avatar: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80',
+    contractType: 'Full-time',
+    joinDate: '2023-03-15',
+    supervisor: 'Emma Wilson',
+    assignedFarmers: 0,
+    issuedTools: [],
+    projects: [],
+    archived: true
   }
 ];
 
@@ -84,18 +123,125 @@ const statuses = ['All Status', 'Active', 'Inactive', 'Pending'];
 const verificationStatuses = ['All Verification', 'Verified', 'Unverified', 'Pending'];
 const contractTypes = ['All Contracts', 'Full-time', 'Part-time', 'Short-term'];
 
-const Agents = () => {
+const AgentTable = ({ agents, title }: { agents: Agent[], title?: string }) => {
   const navigate = useNavigate();
+
+  const handleAgentClick = (agentId: number) => {
+    navigate(`/agents/${agentId}`);
+  };
+
+  return (
+    <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-200">
+      {title && <h2 className="text-lg font-semibold text-gray-900 mb-6">{title}</h2>}
+      <div className="overflow-x-auto">
+        <table className="w-full">
+          <thead>
+            <tr className="text-left text-sm text-gray-500 border-b border-gray-200">
+              <th className="pb-4 font-medium">Agent</th>
+              <th className="pb-4 font-medium">Location</th>
+              <th className="pb-4 font-medium">Contract</th>
+              <th className="pb-4 font-medium">Status</th>
+              <th className="pb-4 font-medium">Verification</th>
+              <th className="pb-4 font-medium">Performance</th>
+              <th className="pb-4 font-medium">Projects</th>
+              <th className="pb-4 font-medium">Farmers</th>
+              <th className="pb-4 font-medium">Tools</th>
+            </tr>
+          </thead>
+          <tbody>
+            {agents.map((agent) => (
+              <tr 
+                key={agent.id} 
+                className="border-b border-gray-100 last:border-0 hover:bg-gray-50 cursor-pointer"
+                onClick={() => handleAgentClick(agent.id)}
+              >
+                <td className="py-4">
+                  <div className="flex items-center">
+                    <img src={agent.avatar} alt={agent.name} className="w-8 h-8 rounded-full mr-3" />
+                    <div>
+                      <div className="font-medium text-gray-900">{agent.name}</div>
+                      <div className="text-sm text-gray-500">{agent.email}</div>
+                    </div>
+                  </div>
+                </td>
+                <td className="py-4">
+                  <div className="flex items-center text-gray-500">
+                    <MapPin className="w-4 h-4 mr-1" />
+                    <span>{agent.district}</span>
+                  </div>
+                </td>
+                <td className="py-4">
+                  <div className="flex items-center text-gray-500">
+                    <Briefcase className="w-4 h-4 mr-1" />
+                    <span>{agent.contractType}</span>
+                  </div>
+                </td>
+                <td className="py-4">
+                  <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                    agent.status === 'Active' ? 'bg-green-100 text-green-800' : 
+                    agent.status === 'Archived' ? 'bg-gray-100 text-gray-800' :
+                    'bg-yellow-100 text-yellow-800'
+                  }`}>
+                    {agent.status}
+                  </span>
+                </td>
+                <td className="py-4">
+                  <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                    agent.verificationStatus === 'Verified' ? 'bg-blue-100 text-blue-800' :
+                    agent.verificationStatus === 'Pending' ? 'bg-yellow-100 text-yellow-800' :
+                    'bg-red-100 text-red-800'
+                  }`}>
+                    {agent.verificationStatus}
+                  </span>
+                </td>
+                <td className="py-4">
+                  <div className="flex items-center">
+                    <span className="font-medium text-gray-900">{agent.performance}%</span>
+                    <div className="w-24 h-1.5 bg-gray-200 rounded-full ml-3">
+                      <div 
+                        className="h-full bg-green-500 rounded-full"
+                        style={{ width: `${agent.performance}%` }}
+                      ></div>
+                    </div>
+                  </div>
+                </td>
+                <td className="py-4">
+                  <div className="flex flex-col gap-1">
+                    {agent.projects.map((project) => (
+                      <span key={project.id} className="text-sm text-gray-500">
+                        {project.name}
+                      </span>
+                    ))}
+                  </div>
+                </td>
+                <td className="py-4">
+                  <div className="flex items-center text-gray-500">
+                    <UsersIcon className="w-4 h-4 mr-1" />
+                    <span>{agent.assignedFarmers}</span>
+                  </div>
+                </td>
+                <td className="py-4">
+                  <div className="flex items-center text-gray-500">
+                    <Tool className="w-4 h-4 mr-1" />
+                    <span>{agent.issuedTools.length}</span>
+                  </div>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  );
+};
+
+const Agents = () => {
   const [selectedRegion, setSelectedRegion] = useState('All Regions');
   const [selectedDistrict, setSelectedDistrict] = useState('All Districts');
   const [selectedStatus, setSelectedStatus] = useState('All Status');
   const [selectedVerification, setSelectedVerification] = useState('All Verification');
   const [selectedContract, setSelectedContract] = useState('All Contracts');
   const [searchQuery, setSearchQuery] = useState('');
-
-  const handleAgentClick = (agentId: number) => {
-    navigate(`/agents/${agentId}`);
-  };
 
   return (
     <div className="space-y-6">
@@ -176,94 +322,13 @@ const Agents = () => {
             </select>
           </div>
         </div>
-
-        <div className="overflow-x-auto">
-          <table className="w-full">
-            <thead>
-              <tr className="text-left text-sm text-gray-500 border-b border-gray-200">
-                <th className="pb-4 font-medium">Agent</th>
-                <th className="pb-4 font-medium">Location</th>
-                <th className="pb-4 font-medium">Contract</th>
-                <th className="pb-4 font-medium">Status</th>
-                <th className="pb-4 font-medium">Verification</th>
-                <th className="pb-4 font-medium">Performance</th>
-                <th className="pb-4 font-medium">Farmers</th>
-                <th className="pb-4 font-medium">Tools</th>
-              </tr>
-            </thead>
-            <tbody>
-              {agents.map((agent) => (
-                <tr 
-                  key={agent.id} 
-                  className="border-b border-gray-100 last:border-0 hover:bg-gray-50 cursor-pointer"
-                  onClick={() => handleAgentClick(agent.id)}
-                >
-                  <td className="py-4">
-                    <div className="flex items-center">
-                      <img src={agent.avatar} alt={agent.name} className="w-8 h-8 rounded-full mr-3" />
-                      <div>
-                        <div className="font-medium text-gray-900">{agent.name}</div>
-                        <div className="text-sm text-gray-500">{agent.email}</div>
-                      </div>
-                    </div>
-                  </td>
-                  <td className="py-4">
-                    <div className="flex items-center text-gray-500">
-                      <MapPin className="w-4 h-4 mr-1" />
-                      <span>{agent.district}</span>
-                    </div>
-                  </td>
-                  <td className="py-4">
-                    <div className="flex items-center text-gray-500">
-                      <Briefcase className="w-4 h-4 mr-1" />
-                      <span>{agent.contractType}</span>
-                    </div>
-                  </td>
-                  <td className="py-4">
-                    <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                      agent.status === 'Active' ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'
-                    }`}>
-                      {agent.status}
-                    </span>
-                  </td>
-                  <td className="py-4">
-                    <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                      agent.verificationStatus === 'Verified' ? 'bg-blue-100 text-blue-800' :
-                      agent.verificationStatus === 'Pending' ? 'bg-yellow-100 text-yellow-800' :
-                      'bg-red-100 text-red-800'
-                    }`}>
-                      {agent.verificationStatus}
-                    </span>
-                  </td>
-                  <td className="py-4">
-                    <div className="flex items-center">
-                      <span className="font-medium text-gray-900">{agent.performance}%</span>
-                      <div className="w-24 h-1.5 bg-gray-200 rounded-full ml-3">
-                        <div 
-                          className="h-full bg-green-500 rounded-full"
-                          style={{ width: `${agent.performance}%` }}
-                        ></div>
-                      </div>
-                    </div>
-                  </td>
-                  <td className="py-4">
-                    <div className="flex items-center text-gray-500">
-                      <UsersIcon className="w-4 h-4 mr-1" />
-                      <span>{agent.assignedFarmers}</span>
-                    </div>
-                  </td>
-                  <td className="py-4">
-                    <div className="flex items-center text-gray-500">
-                      <Tool className="w-4 h-4 mr-1" />
-                      <span>{agent.issuedTools.length}</span>
-                    </div>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
       </div>
+
+      <AgentTable agents={agents} />
+      
+      {archivedAgents.length > 0 && (
+        <AgentTable agents={archivedAgents} title="Archived Agents" />
+      )}
     </div>
   );
 };

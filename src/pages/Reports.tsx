@@ -1,72 +1,140 @@
-import React, { useState } from 'react';
-import { 
-  BarChart, Bar, LineChart, Line, PieChart, Pie, 
-  XAxis, YAxis, CartesianGrid, Tooltip, Legend, 
-  ResponsiveContainer, Cell 
-} from 'recharts';
- 
-// Sample data for charts
-const performanceData = [
-  { month: 'Jan', calls: 120, meetings: 20, deals: 5 },
-  { month: 'Feb', calls: 150, meetings: 25, deals: 8 },
-  { month: 'Mar', calls: 180, meetings: 30, deals: 12 },
-  { month: 'Apr', calls: 170, meetings: 28, deals: 10 },
-  { month: 'May', calls: 200, meetings: 35, deals: 15 },
-  { month: 'Jun', calls: 220, meetings: 40, deals: 18 },
-];
- 
-const revenueData = [
-  { month: 'Jan', revenue: 15000 },
-  { month: 'Feb', revenue: 25000 },
-  { month: 'Mar', revenue: 35000 },
-  { month: 'Apr', revenue: 30000 },
-  { month: 'May', revenue: 40000 },
-  { month: 'Jun', revenue: 50000 },
-];
- 
-const agentPerformanceData = [
-  { name: 'John Doe', performance: 85 },
-  { name: 'Jane Smith', performance: 92 },
-  { name: 'Robert Johnson', performance: 78 },
-  { name: 'Emily Davis', performance: 88 },
-  { name: 'Michael Brown', performance: 95 },
-];
- 
-const taskCompletionData = [
-  { name: 'Completed', value: 75, color: '#4CAF50' },
-  { name: 'In Progress', value: 15, color: '#2196F3' },
-  { name: 'Overdue', value: 10, color: '#F44336' },
+import React, { useState, useMemo, useEffect } from 'react';
+
+// Sample data for agent reports with farmer-related content
+const sampleReportsData = [
+  { id: 1, agentName: 'John Doe', title: 'Farmer Registration - Samuel Mwangi', date: '2025-03-15', status: 'pending' },
+  { id: 2, agentName: 'Jane Smith', title: 'Crop Production Report - Wanjiku Farms', date: '2025-03-14', status: 'submitted' },
+  { id: 3, agentName: 'Robert Johnson', title: 'New Farmer Onboarding - Ochieng Family', date: '2025-03-12', status: 'rejected' },
+  { id: 4, agentName: 'Emily Davis', title: 'Farmer Training Completion - Kamau Group', date: '2025-03-10', status: 'submitted' },
+  { id: 5, agentName: 'Michael Brown', title: 'Farm Inspection Results - Mutua Plantation', date: '2025-03-08', status: 'pending' },
+  { id: 6, agentName: 'Sarah Wilson', title: 'Farmer Feedback Analysis - Otieno Cooperative', date: '2025-03-05', status: 'submitted' },
+  { id: 7, agentName: 'David Thompson', title: 'Soil Testing Results - Njoroge Farm', date: '2025-03-03', status: 'rejected' },
+  { id: 8, agentName: 'Lisa Anderson', title: 'Seed Distribution Report - Kimani Region', date: '2025-03-01', status: 'submitted' },
+  { id: 9, agentName: 'James Martinez', title: 'Harvest Forecast - Wekesa Cooperative', date: '2025-02-28', status: 'pending' },
+  { id: 10, agentName: 'Jennifer Taylor', title: 'Farmer Retention Strategy - Arunga District', date: '2025-02-25', status: 'submitted' },
 ];
  
 const Reports = () => {
   const [dateRange, setDateRange] = useState<string>('last30days');
-  const [reportType, setReportType] = useState<string>('all');
+  const [reportStatus, setReportStatus] = useState<string>('all');
+  const [searchQuery, setSearchQuery] = useState<string>('');
+  const [reports, setReports] = useState(sampleReportsData);
+  const [statsUpdatedAt, setStatsUpdatedAt] = useState<Date>(new Date());
+  
+  // Calculate report statistics
+  const reportStats = useMemo(() => {
+    const pending = reports.filter(report => report.status === 'pending').length;
+    const submitted = reports.filter(report => report.status === 'submitted').length;
+    const rejected = reports.filter(report => report.status === 'rejected').length;
+    
+    return { pending, submitted, rejected, total: reports.length };
+  }, [reports]);
   
   // Filter handlers
   const handleDateRangeChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     setDateRange(e.target.value);
+    // In a real app, this would filter the reports based on date range
   };
   
-  const handleReportTypeChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    setReportType(e.target.value);
+  const handleReportStatusChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const status = e.target.value;
+    setReportStatus(status);
+    applyFilters(status, searchQuery);
+  };
+  
+  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const query = e.target.value;
+    setSearchQuery(query);
+    applyFilters(reportStatus, query);
+  };
+  
+  // Initialize stats timestamp when component loads
+  useEffect(() => {
+    setStatsUpdatedAt(new Date());
+  }, []);
+
+  // Combined filter function
+  const applyFilters = (status: string, query: string) => {
+    let filteredReports = sampleReportsData;
+    setStatsUpdatedAt(new Date());
+    
+    // Apply status filter
+    if (status !== 'all') {
+      filteredReports = filteredReports.filter(report => report.status === status);
+    }
+    
+    // Apply search filter
+    if (query.trim() !== '') {
+      const searchLower = query.toLowerCase();
+      filteredReports = filteredReports.filter(report => 
+        report.agentName.toLowerCase().includes(searchLower) || 
+        report.title.toLowerCase().includes(searchLower)
+      );
+    }
+    
+    setReports(filteredReports);
   };
   
   // Export handlers
   const handleExportPDF = () => {
-    alert('Exporting as PDF...');
+    alert('Exporting reports as PDF...');
     // Implementation would go here
   };
   
   const handleExportCSV = () => {
-    alert('Exporting as CSV...');
+    alert('Exporting reports as CSV...');
     // Implementation would go here
   };
  
   return (
     <div className="reports-container">
       <div className="flex justify-between items-center mb-6">
-        <h1 className="text-2xl font-bold text-gray-800">Reports Dashboard</h1>
-        <div className="flex space-x-4">
+        <h1 className="text-2xl font-bold text-gray-800">Agent Reports</h1>
+        <div className="export-buttons">
+          <button 
+            onClick={handleExportPDF}
+            className="bg-blue-600 text-white px-4 py-2 rounded mr-2 hover:bg-blue-700"
+          >
+            Export PDF
+          </button>
+          <button 
+            onClick={handleExportCSV}
+            className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700"
+          >
+            Export CSV
+          </button>
+        </div>
+      </div>
+
+      {/* Report Statistics Section */}
+      <div className="mb-8">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+          <div className="bg-white p-4 rounded-lg shadow">
+            <h3 className="text-sm font-medium text-gray-500">Total Reports</h3>
+            <p className="text-2xl font-bold text-gray-800">{reportStats.total}</p>
+            <p className="text-xs text-gray-500 mt-2">Last updated: {statsUpdatedAt.toLocaleString()}</p>
+          </div>
+          <div className="bg-white p-4 rounded-lg shadow">
+            <h3 className="text-sm font-medium text-gray-500">Pending</h3>
+            <p className="text-2xl font-bold text-yellow-500">{reportStats.pending}</p>
+            <p className="text-xs text-gray-500 mt-2">Last updated: {statsUpdatedAt.toLocaleString()}</p>
+          </div>
+          <div className="bg-white p-4 rounded-lg shadow">
+            <h3 className="text-sm font-medium text-gray-500">Submitted</h3>
+            <p className="text-2xl font-bold text-green-500">{reportStats.submitted}</p>
+            <p className="text-xs text-gray-500 mt-2">Last updated: {statsUpdatedAt.toLocaleString()}</p>
+          </div>
+          <div className="bg-white p-4 rounded-lg shadow">
+            <h3 className="text-sm font-medium text-gray-500">Rejected</h3>
+            <p className="text-2xl font-bold text-red-500">{reportStats.rejected}</p>
+            <p className="text-xs text-gray-500 mt-2">Last updated: {statsUpdatedAt.toLocaleString()}</p>
+          </div>
+        </div>
+      </div>
+
+      {/* Filters Section */}
+      <div className="bg-white p-4 rounded-lg shadow mb-6">
+        <div className="flex flex-wrap gap-4">
           <div className="filter-group">
             <label htmlFor="dateRange" className="mr-2 text-gray-600">Date Range:</label>
             <select 
@@ -83,164 +151,103 @@ const Reports = () => {
             </select>
           </div>
           <div className="filter-group">
-            <label htmlFor="reportType" className="mr-2 text-gray-600">Report Type:</label>
+            <label htmlFor="reportStatus" className="mr-2 text-gray-600">Report Status:</label>
             <select 
-              id="reportType" 
-              value={reportType} 
-              onChange={handleReportTypeChange}
+              id="reportStatus" 
+              value={reportStatus} 
+              onChange={handleReportStatusChange}
               className="border rounded p-2 text-gray-700"
             >
-              <option value="all">All Reports</option>
-              <option value="performance">Performance</option>
-              <option value="financial">Financial</option>
-              <option value="tasks">Tasks</option>
-              <option value="agents">Agents</option>
+              <option value="all">All Statuses</option>
+              <option value="pending">Pending</option>
+              <option value="submitted">Submitted</option>
+              <option value="rejected">Rejected</option>
             </select>
           </div>
-          <div className="export-buttons">
-            <button 
-              onClick={handleExportPDF}
-              className="bg-blue-600 text-white px-4 py-2 rounded mr-2 hover:bg-blue-700"
-            >
-              Export PDF
-            </button>
-            <button 
-              onClick={handleExportCSV}
-              className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700"
-            >
-              Export CSV
-            </button>
+        </div>
+      </div>
+      
+      {/* Search Bar */}
+      <div className="bg-white p-4 rounded-lg shadow mb-6">
+        <div className="relative">
+          <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+            <svg className="h-5 w-5 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
+              <path fillRule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clipRule="evenodd" />
+            </svg>
           </div>
+          <input
+            type="text"
+            placeholder="Search by agent name or report title..."
+            value={searchQuery}
+            onChange={handleSearchChange}
+            className="pl-10 pr-4 py-2 border rounded-lg w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
+          />
         </div>
       </div>
  
-      {/* Performance Reports Section */}
-      <div className="report-section mb-8">
-        <h2 className="text-xl font-semibold mb-4 text-gray-700 border-b pb-2">Performance Metrics</h2>
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <div className="bg-white p-4 rounded-lg shadow">
-            <h3 className="text-lg font-medium mb-3 text-gray-700">Agent Activity</h3>
-            <ResponsiveContainer width="100%" height={300}>
-              <BarChart data={performanceData}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="month" />
-                <YAxis />
-                <Tooltip />
-                <Legend />
-                <Bar dataKey="calls" fill="#8884d8" name="Calls Made" />
-                <Bar dataKey="meetings" fill="#82ca9d" name="Meetings Set" />
-                <Bar dataKey="deals" fill="#ffc658" name="Deals Closed" />
-              </BarChart>
-            </ResponsiveContainer>
-          </div>
-          <div className="bg-white p-4 rounded-lg shadow">
-            <h3 className="text-lg font-medium mb-3 text-gray-700">Agent Performance Ranking</h3>
-            <ResponsiveContainer width="100%" height={300}>
-              <BarChart 
-                data={agentPerformanceData} 
-                layout="vertical"
-              >
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis type="number" />
-                <YAxis dataKey="name" type="category" width={100} />
-                <Tooltip />
-                <Legend />
-                <Bar dataKey="performance" fill="#8884d8" name="Performance Score" />
-              </BarChart>
-            </ResponsiveContainer>
-          </div>
+      {/* Reports Table */}
+      <div className="bg-white rounded-lg shadow overflow-hidden">
+        <div className="overflow-x-auto">
+          <table className="min-w-full divide-y divide-gray-200">
+            <thead className="bg-gray-50">
+              <tr>
+                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Report ID
+                </th>
+                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Agent Name
+                </th>
+                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Report Title
+                </th>
+                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Date
+                </th>
+                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Status
+                </th>
+                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Actions
+                </th>
+              </tr>
+            </thead>
+            <tbody className="bg-white divide-y divide-gray-200">
+              {reports.map((report) => (
+                <tr key={report.id} className="hover:bg-gray-50">
+                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                    #{report.id}
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                    {report.agentName}
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                    {report.title}
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                    {new Date(report.date).toLocaleDateString()}
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full 
+                      ${report.status === 'pending' ? 'bg-yellow-100 text-yellow-800' : 
+                        report.status === 'submitted' ? 'bg-green-100 text-green-800' : 
+                        'bg-red-100 text-red-800'}`}>
+                      {report.status.charAt(0).toUpperCase() + report.status.slice(1)}
+                    </span>
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                    <button className="text-indigo-600 hover:text-indigo-900 mr-3">View</button>
+                    <button className="text-indigo-600 hover:text-indigo-900">Edit</button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
         </div>
-      </div>
- 
-      {/* Financial Reports Section */}
-      <div className="report-section mb-8">
-        <h2 className="text-xl font-semibold mb-4 text-gray-700 border-b pb-2">Financial Reports</h2>
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <div className="bg-white p-4 rounded-lg shadow">
-            <h3 className="text-lg font-medium mb-3 text-gray-700">Revenue Trends</h3>
-            <ResponsiveContainer width="100%" height={300}>
-              <LineChart data={revenueData}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="month" />
-                <YAxis />
-                <Tooltip formatter={(value) => [`$${value}`, 'Revenue']} />
-                <Legend />
-                <Line 
-                  type="monotone" 
-                  dataKey="revenue" 
-                  stroke="#2196F3" 
-                  activeDot={{ r: 8 }} 
-                  name="Monthly Revenue"
-                />
-              </LineChart>
-            </ResponsiveContainer>
+        {reports.length === 0 && (
+          <div className="text-center py-4 text-gray-500">
+            No reports found matching the selected filters.
           </div>
-          <div className="bg-white p-4 rounded-lg shadow">
-            <h3 className="text-lg font-medium mb-3 text-gray-700">Revenue by Agent</h3>
-            <div className="flex items-center justify-center h-full">
-              <div className="text-center text-gray-500">
-                <svg className="w-12 h-12 mx-auto text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
-                </svg>
-                <p className="mt-2">Detailed agent revenue data will be available soon</p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
- 
-      {/* Task Reports Section */}
-      <div className="report-section mb-8">
-        <h2 className="text-xl font-semibold mb-4 text-gray-700 border-b pb-2">Task Reports</h2>
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <div className="bg-white p-4 rounded-lg shadow">
-            <h3 className="text-lg font-medium mb-3 text-gray-700">Task Completion Status</h3>
-            <ResponsiveContainer width="100%" height={300}>
-              <PieChart>
-                <Pie
-                  data={taskCompletionData}
-                  cx="50%"
-                  cy="50%"
-                  labelLine={false}
-                  outerRadius={100}
-                  fill="#8884d8"
-                  dataKey="value"
-                  label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
-                >
-                  {taskCompletionData.map((entry, index) => (
-                    <Cell key={`cell-${index}`} fill={entry.color} />
-                  ))}
-                </Pie>
-                <Tooltip formatter={(value) => [`${value}%`, 'Percentage']} />
-                <Legend />
-              </PieChart>
-            </ResponsiveContainer>
-          </div>
-          <div className="bg-white p-4 rounded-lg shadow">
-            <h3 className="text-lg font-medium mb-3 text-gray-700">Task Completion Trends</h3>
-            <div className="flex items-center justify-center h-full">
-              <div className="text-center text-gray-500">
-                <svg className="w-12 h-12 mx-auto text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                </svg>
-                <p className="mt-2">Historical task completion data will be available soon</p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
- 
-      {/* Custom Report Builder Section */}
-      <div className="report-section">
-        <h2 className="text-xl font-semibold mb-4 text-gray-700 border-b pb-2">Custom Report Builder</h2>
-        <div className="bg-white p-6 rounded-lg shadow">
-          <p className="text-gray-600 mb-4">
-            Build custom reports by selecting metrics, dimensions, and filters to analyze your data in detail.
-          </p>
-          <button className="bg-purple-600 text-white px-4 py-2 rounded hover:bg-purple-700">
-            Create Custom Report
-          </button>
-        </div>
+        )}
       </div>
     </div>
   );

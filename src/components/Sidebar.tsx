@@ -9,17 +9,20 @@ import {
   Settings,
   HelpCircle,
   Home,
-  FileText
+  FileText,
+  UserPlus
 } from 'lucide-react';
 
 const menuItems = [
   { icon: Home, label: 'Dashboard', path: '/' },
   { icon: Users, label: 'Agents', path: '/agents' },
+  { icon: UserPlus, label: 'Recruitment', path: '/recruitment' },
   { icon: BookOpen, label: 'Training', path: '/training' },
   { icon: DollarSign, label: 'Financials', path: '/financials' },
   { icon: CheckSquare, label: 'Tasks', path: '/tasks' },
   { icon: BarChart3, label: 'Performance', path: '/performance' },
   { icon: FileText, label: 'Reports', path: '/reports' },
+  { icon: FileText, label: 'Commodoties', path: '/reports' },
 ];
 
 const Sidebar = () => {
