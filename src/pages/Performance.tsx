@@ -1,6 +1,6 @@
 import React from 'react';
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
-import { Trophy, TrendingUp, Target } from 'lucide-react';
+import { BarChart, Bar, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
+import { Trophy, TrendingUp, Target, XCircle } from 'lucide-react';
 
 const performanceData = [
   { month: 'Jan', revenue: 65000, tasks: 45 },
@@ -9,6 +9,15 @@ const performanceData = [
   { month: 'Apr', revenue: 81000, tasks: 57 },
   { month: 'May', revenue: 56000, tasks: 41 },
   { month: 'Jun', revenue: 55000, tasks: 36 },
+];
+
+const salesTrendData = [
+  { month: 'Jan', sales: 42000 },
+  { month: 'Feb', sales: 45000 },
+  { month: 'Mar', sales: 58000 },
+  { month: 'Apr', sales: 62000 },
+  { month: 'May', sales: 71000 },
+  { month: 'Jun', sales: 68000 },
 ];
 
 const topAgents = [
@@ -47,7 +56,7 @@ const Performance = () => {
         </select>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
         <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-200">
           <div className="flex items-center justify-between mb-4">
             <div className="p-2 rounded-lg bg-green-100">
@@ -78,7 +87,45 @@ const Performance = () => {
             <span className="text-sm font-medium text-purple-600">+8%</span>
           </div>
           <h3 className="text-2xl font-bold text-gray-900 mb-1">94%</h3>
-          <p className="text-sm text-gray-500">Goal Achievement</p>
+          <p className="text-sm text-gray-500">Target Achievement</p>
+        </div>
+
+        <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-200">
+          <div className="flex items-center justify-between mb-4">
+            <div className="p-2 rounded-lg bg-red-100">
+              <XCircle className="w-6 h-6 text-red-600" />
+            </div>
+            <span className="text-sm font-medium text-red-600">-5%</span>
+          </div>
+          <h3 className="text-2xl font-bold text-gray-900 mb-1">12</h3>
+          <p className="text-sm text-gray-500">Rejected Reports</p>
+        </div>
+      </div>
+
+      <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-200">
+        <h2 className="text-lg font-semibold text-gray-900 mb-4">Aggregate Performance Overview</h2>
+        <p className="text-gray-700">
+          The dashboard shows aggregate performance metrics across all agents for this quarter.
+        </p>
+        <div className="mt-4 p-4 bg-green-50 rounded-lg border border-green-100">
+          <p className="text-sm text-green-800">
+            Overall agent performance is 94% above target benchmarks. 
+          </p>
+        </div>
+      </div>
+
+      <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-200">
+        <h2 className="text-lg font-semibold text-gray-900 mb-6">Sales Trends</h2>
+        <div className="h-80">
+          <ResponsiveContainer width="100%" height="100%">
+            <LineChart data={salesTrendData}>
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis dataKey="month" />
+              <YAxis />
+              <Tooltip />
+              <Line type="monotone" dataKey="sales" stroke="#4F46E5" strokeWidth={2} />
+            </LineChart>
+          </ResponsiveContainer>
         </div>
       </div>
 

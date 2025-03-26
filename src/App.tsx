@@ -5,6 +5,7 @@ import DashboardHeader from './components/DashboardHeader';
 import Dashboard from './pages/Dashboard';
 import Agents from './pages/Agents';
 import AgentProfile from './pages/AgentProfile';
+import AchievedAgents from './pages/AchievedAgents';
 import Training from './pages/Training';
 import Financials from './pages/Financials';
 import Tasks from './pages/Tasks';
@@ -13,6 +14,7 @@ import Performance from './pages/Performance';
 import Reports from './pages/Reports';
 import Settings from './pages/Settings';
 import Help from './pages/Help';
+import Commodities from './pages/Commodities';
 
 function App() {
   return (
@@ -25,6 +27,7 @@ function App() {
             <Routes>
               <Route path="/" element={<Dashboard />} />
               <Route path="/agents" element={<Agents />} />
+              <Route path="/agents/achieved" element={<AchievedAgents />} />
               <Route path="/agents/:id" element={<AgentProfile />} />
               <Route path="/training" element={<Training />} />
               <Route path="/recruitment" element={<Recruitment />} />
@@ -34,6 +37,7 @@ function App() {
               <Route path="/reports" element={<Reports />} />
               <Route path="/settings" element={<Settings />} />
               <Route path="/help" element={<Help />} />
+              <Route path="/commodities" element={<Commodities />} />
             </Routes>
           </main>
         </div>

@@ -84,6 +84,7 @@ const AgentProfile = () => {
 
   return (
     <div className="space-y-6">
+      {/* Header with navigation and action buttons */}
       <div className="flex items-center justify-between">
         <div className="flex items-center space-x-4">
           <Link
@@ -102,6 +103,59 @@ const AgentProfile = () => {
           <button className="px-4 py-2 text-white bg-red-600 rounded-lg hover:bg-red-700">
             Remove Agent
           </button>
+        </div>
+      </div>
+
+      {/* Agent Personal Information - Top Section */}
+      <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-200">
+        <div className="flex flex-col md:flex-row items-center md:items-start">
+          <div className="text-center md:text-left md:mr-8">
+            <img
+              src={agent.avatar}
+              alt={agent.name}
+              className="w-24 h-24 rounded-full mb-4"
+            />
+            <h2 className="text-xl font-semibold text-gray-900">{agent.name}</h2>
+            <p className="text-gray-500">{agent.contractType} Agent</p>
+            <div className="mt-2 flex items-center">
+              <Shield className="w-5 h-5 text-green-500 mr-2" />
+              <span className="text-sm font-medium text-green-500">Verified Agent</span>
+            </div>
+          </div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-2 mt-6 md:mt-0 flex-grow">
+            <div className="space-y-3">
+              <div className="flex items-center text-gray-500">
+                <Mail className="w-5 h-5 mr-3" />
+                <span>{agent.email}</span>
+              </div>
+              <div className="flex items-center text-gray-500">
+                <Phone className="w-5 h-5 mr-3" />
+                <span>{agent.phone}</span>
+              </div>
+              <div className="flex items-center text-gray-500">
+                <MapPin className="w-5 h-5 mr-3" />
+                <span>{agent.district}, {agent.region}</span>
+              </div>
+            </div>
+            <div className="space-y-3">
+              <div className="flex items-center text-gray-500">
+                <Calendar className="w-5 h-5 mr-3" />
+                <span>Joined {new Date(agent.joinDate).toLocaleDateString()}</span>
+              </div>
+              <div className="flex items-center text-gray-500">
+                <Briefcase className="w-5 h-5 mr-3" />
+                <span>Reports to {agent.supervisor}</span>
+              </div>
+              <div className="flex items-start space-x-3">
+                <MapPinned className="w-5 h-5 text-blue-500 mt-1" />
+                <div>
+                  <p className="text-sm text-gray-900">{agent.lastLocation.address}</p>
+                  <p className="text-xs text-gray-500">Last updated: {agent.lastLocation.lastUpdated}</p>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -132,65 +186,32 @@ const AgentProfile = () => {
         </div>
       </div>
 
+      {/* Main Content - Two Column Layout */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Personal Information */}
+        {/* Left Column - Agent Summary */}
         <div className="lg:col-span-1">
-          <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-200">
-            <div className="text-center mb-6">
-              <img
-                src={agent.avatar}
-                alt={agent.name}
-                className="w-24 h-24 rounded-full mx-auto mb-4"
-              />
-              <h2 className="text-xl font-semibold text-gray-900">{agent.name}</h2>
-              <p className="text-gray-500">{agent.contractType} Agent</p>
-            </div>
-            
+
+          {/* Performance Overview Card */}
+          <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-200 mb-6">
+            <h3 className="text-lg font-medium text-gray-900 mb-4">Performance Overview</h3>
             <div className="space-y-4">
-              <div className="flex items-center text-gray-500">
-                <Mail className="w-5 h-5 mr-3" />
-                <span>{agent.email}</span>
+              <div className="p-4 bg-gray-50 rounded-lg">
+                <div className="text-sm text-gray-500 mb-1">Performance Score</div>
+                <div className="text-2xl font-semibold text-gray-900">{agent.performance}%</div>
               </div>
-              <div className="flex items-center text-gray-500">
-                <Phone className="w-5 h-5 mr-3" />
-                <span>{agent.phone}</span>
+              <div className="p-4 bg-gray-50 rounded-lg">
+                <div className="text-sm text-gray-500 mb-1">Revenue Generated</div>
+                <div className="text-2xl font-semibold text-gray-900">{agent.revenue}</div>
               </div>
-              <div className="flex items-center text-gray-500">
-                <MapPin className="w-5 h-5 mr-3" />
-                <span>{agent.district}, {agent.region}</span>
-              </div>
-              <div className="flex items-center text-gray-500">
-                <Calendar className="w-5 h-5 mr-3" />
-                <span>Joined {new Date(agent.joinDate).toLocaleDateString()}</span>
-              </div>
-              <div className="flex items-center text-gray-500">
-                <Briefcase className="w-5 h-5 mr-3" />
-                <span>Reports to {agent.supervisor}</span>
-              </div>
-            </div>
-
-            <div className="mt-6 pt-6 border-t border-gray-200">
-              <h3 className="text-sm font-medium text-gray-900 mb-4">Last Known Location</h3>
-              <div className="flex items-start space-x-3">
-                <MapPinned className="w-5 h-5 text-blue-500 mt-1" />
-                <div>
-                  <p className="text-sm text-gray-900">{agent.lastLocation.address}</p>
-                  <p className="text-xs text-gray-500">Last updated: {agent.lastLocation.lastUpdated}</p>
-                </div>
-              </div>
-            </div>
-
-            <div className="mt-6 pt-6 border-t border-gray-200">
-              <h3 className="text-sm font-medium text-gray-900 mb-4">Verification Status</h3>
-              <div className="flex items-center">
-                <Shield className="w-5 h-5 text-green-500 mr-2" />
-                <span className="text-sm font-medium text-green-500">Verified Agent</span>
+              <div className="p-4 bg-gray-50 rounded-lg">
+                <div className="text-sm text-gray-500 mb-1">Active Tasks</div>
+                <div className="text-2xl font-semibold text-gray-900">{agent.tasks}</div>
               </div>
             </div>
           </div>
         </div>
-
-        {/* Main Content */}
+        
+        {/* Right Column - Main Content */}
         <div className="lg:col-span-2 space-y-6">
           {/* Projects */}
           <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-200">
@@ -216,24 +237,6 @@ const AgentProfile = () => {
             </div>
           </div>
 
-          {/* Performance Overview */}
-          <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-200">
-            <h3 className="text-lg font-medium text-gray-900 mb-4">Performance Overview</h3>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div className="p-4 bg-gray-50 rounded-lg">
-                <div className="text-sm text-gray-500 mb-1">Performance Score</div>
-                <div className="text-2xl font-semibold text-gray-900">{agent.performance}%</div>
-              </div>
-              <div className="p-4 bg-gray-50 rounded-lg">
-                <div className="text-sm text-gray-500 mb-1">Revenue Generated</div>
-                <div className="text-2xl font-semibold text-gray-900">{agent.revenue}</div>
-              </div>
-              <div className="p-4 bg-gray-50 rounded-lg">
-                <div className="text-sm text-gray-500 mb-1">Active Tasks</div>
-                <div className="text-2xl font-semibold text-gray-900">{agent.tasks}</div>
-              </div>
-            </div>
-          </div>
 
           {/* Assigned Farmers */}
           <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-200">

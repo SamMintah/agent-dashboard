@@ -1,4 +1,5 @@
 import React, { useState, useMemo, useEffect } from 'react';
+import ReportOverviewStats from '../components/ReportOverviewStats';
 
 // Sample data for agent reports with farmer-related content
 const sampleReportsData = [
@@ -107,30 +108,7 @@ const Reports = () => {
       </div>
 
       {/* Report Statistics Section */}
-      <div className="mb-8">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-          <div className="bg-white p-4 rounded-lg shadow">
-            <h3 className="text-sm font-medium text-gray-500">Total Reports</h3>
-            <p className="text-2xl font-bold text-gray-800">{reportStats.total}</p>
-            <p className="text-xs text-gray-500 mt-2">Last updated: {statsUpdatedAt.toLocaleString()}</p>
-          </div>
-          <div className="bg-white p-4 rounded-lg shadow">
-            <h3 className="text-sm font-medium text-gray-500">Pending</h3>
-            <p className="text-2xl font-bold text-yellow-500">{reportStats.pending}</p>
-            <p className="text-xs text-gray-500 mt-2">Last updated: {statsUpdatedAt.toLocaleString()}</p>
-          </div>
-          <div className="bg-white p-4 rounded-lg shadow">
-            <h3 className="text-sm font-medium text-gray-500">Submitted</h3>
-            <p className="text-2xl font-bold text-green-500">{reportStats.submitted}</p>
-            <p className="text-xs text-gray-500 mt-2">Last updated: {statsUpdatedAt.toLocaleString()}</p>
-          </div>
-          <div className="bg-white p-4 rounded-lg shadow">
-            <h3 className="text-sm font-medium text-gray-500">Rejected</h3>
-            <p className="text-2xl font-bold text-red-500">{reportStats.rejected}</p>
-            <p className="text-xs text-gray-500 mt-2">Last updated: {statsUpdatedAt.toLocaleString()}</p>
-          </div>
-        </div>
-      </div>
+      <ReportOverviewStats reportStats={reportStats} statsUpdatedAt={statsUpdatedAt} />
 
       {/* Filters Section */}
       <div className="bg-white p-4 rounded-lg shadow mb-6">
@@ -236,7 +214,6 @@ const Reports = () => {
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                     <button className="text-indigo-600 hover:text-indigo-900 mr-3">View</button>
-                    <button className="text-indigo-600 hover:text-indigo-900">Edit</button>
                   </td>
                 </tr>
               ))}

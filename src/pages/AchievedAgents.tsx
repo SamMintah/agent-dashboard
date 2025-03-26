@@ -29,74 +29,77 @@ interface Agent {
   archived?: boolean;
 }
 
-const agents: Agent[] = [
+const archivedAgents: Agent[] = [
   {
-    id: 1,
-    name: 'Sarah Chen',
-    email: 'sarah.chen@example.com',
+    id: 4,
+    name: 'Robert Williams',
+    email: 'robert.w@example.com',
+    region: 'South',
+    district: 'Southern District',
+    status: 'Archived',
+    verificationStatus: 'Verified',
+    performance: 78,
+    revenue: '$67,890',
+    tasks: 0,
+    avatar: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80',
+    contractType: 'Full-time',
+    joinDate: '2022-03-10',
+    supervisor: 'Emma Wilson',
+    assignedFarmers: 0,
+    issuedTools: ['Tablet', 'GPS Device'],
+    projects: [
+      { id: 5, name: 'Winter Crop Planning', status: 'Completed' }
+    ],
+    archived: true
+  },
+  {
+    id: 5,
+    name: 'Jessica Martinez',
+    email: 'jessica.m@example.com',
     region: 'East Coast',
     district: 'Eastern District',
-    status: 'Active',
+    status: 'Archived',
     verificationStatus: 'Verified',
-    performance: 98,
-    revenue: '$125,430',
-    tasks: 15,
-    avatar: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80',
-    contractType: 'Full-time',
-    joinDate: '2023-06-15',
+    performance: 91,
+    revenue: '$112,450',
+    tasks: 0,
+    avatar: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80',
+    contractType: 'Part-time',
+    joinDate: '2022-08-22',
     supervisor: 'John Smith',
-    assignedFarmers: 45,
-    issuedTools: ['Tablet', 'GPS Device', 'Soil Testing Kit'],
+    assignedFarmers: 0,
+    issuedTools: ['Tablet', 'Soil Testing Kit'],
     projects: [
-      { id: 1, name: 'Spring Planting', status: 'Active' },
-      { id: 2, name: 'Crop Monitoring', status: 'In Progress' }
-    ]
+      { id: 6, name: 'Organic Certification', status: 'Completed' },
+      { id: 7, name: 'Farmer Training', status: 'Completed' }
+    ],
+    archived: true
   },
   {
-    id: 2,
-    name: 'Michael Johnson',
-    email: 'michael.j@example.com',
-    region: 'West Coast',
-    district: 'Western District',
-    status: 'Active',
-    verificationStatus: 'Verified',
-    performance: 85,
-    revenue: '$98,750',
-    tasks: 12,
-    avatar: 'https://images.unsplash.com/photo-1519244703995-f4e0f30006d5?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80',
-    contractType: 'Full-time',
-    joinDate: '2023-08-01',
-    supervisor: 'Emma Wilson',
-    assignedFarmers: 38,
-    issuedTools: ['Tablet', 'Moisture Meter'],
-    projects: [
-      { id: 3, name: 'Harvest Planning', status: 'Pending' }
-    ]
-  },
-  {
-    id: 3,
-    name: 'Emily Rodriguez',
-    email: 'emily.r@example.com',
+    id: 6,
+    name: 'David Thompson',
+    email: 'david.t@example.com',
     region: 'Midwest',
     district: 'Central District',
-    status: 'Inactive',
-    verificationStatus: 'Pending',
-    performance: 92,
-    revenue: '$78,300',
-    tasks: 8,
-    avatar: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80',
-    contractType: 'Part-time',
-    joinDate: '2023-09-15',
+    status: 'Archived',
+    verificationStatus: 'Unverified',
+    performance: 65,
+    revenue: '$45,320',
+    tasks: 0,
+    avatar: 'https://images.unsplash.com/photo-1570295999919-56ceb5ecca61?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80',
+    contractType: 'Short-term',
+    joinDate: '2023-01-05',
     supervisor: 'David Brown',
-    assignedFarmers: 25,
+    assignedFarmers: 0,
     issuedTools: ['Tablet'],
-    projects: []
+    projects: [],
+    archived: true
   }
 ];
 
 const regions = ['All Regions', 'East Coast', 'West Coast', 'Midwest', 'South'];
 const districts = ['All Districts', 'Eastern District', 'Western District', 'Central District', 'Southern District'];
-const statuses = ['All Status', 'Active', 'Inactive', 'Pending'];
+const statuses = ['All Status', 'Active', 'Inactive', 'Pending', 'Archived'];
 const verificationStatuses = ['All Verification', 'Verified', 'Unverified', 'Pending'];
 const contractTypes = ['All Contracts', 'Full-time', 'Part-time', 'Short-term'];
 
@@ -212,7 +215,7 @@ const AgentTable = ({ agents, title }: { agents: Agent[], title?: string }) => {
   );
 };
 
-const Agents = () => {
+const AchievedAgents = () => {
   const [selectedRegion, setSelectedRegion] = useState('All Regions');
   const [selectedDistrict, setSelectedDistrict] = useState('All Districts');
   const [selectedStatus, setSelectedStatus] = useState('All Status');
@@ -220,14 +223,25 @@ const Agents = () => {
   const [selectedContract, setSelectedContract] = useState('All Contracts');
   const [searchQuery, setSearchQuery] = useState('');
 
+  // Filter archived agents based on search query and filters
+  const filteredAgents = archivedAgents.filter(agent => {
+    const matchesSearch = searchQuery === '' || 
+      agent.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      agent.email.toLowerCase().includes(searchQuery.toLowerCase());
+    
+    const matchesRegion = selectedRegion === 'All Regions' || agent.region === selectedRegion;
+    const matchesDistrict = selectedDistrict === 'All Districts' || agent.district === selectedDistrict;
+    const matchesStatus = selectedStatus === 'All Status' || agent.status === selectedStatus;
+    const matchesVerification = selectedVerification === 'All Verification' || agent.verificationStatus === selectedVerification;
+    const matchesContract = selectedContract === 'All Contracts' || agent.contractType === selectedContract;
+    
+    return matchesSearch && matchesRegion && matchesDistrict && matchesStatus && matchesVerification && matchesContract;
+  });
+
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-semibold text-gray-900">Agents</h1>
-        <button className="flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
-          <Plus className="w-5 h-5 mr-2" />
-          Add New Agent
-        </button>
+        <h1 className="text-2xl font-semibold text-gray-900">Achieved Agents</h1>
       </div>
 
       <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-200">
@@ -238,7 +252,7 @@ const Agents = () => {
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
                 <input
                   type="text"
-                  placeholder="Search agents..."
+                  placeholder="Search archived agents..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   className="w-full pl-10 pr-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -302,12 +316,13 @@ const Agents = () => {
       </div>
 
       <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-200 mb-6">
-        <h2 className="text-lg font-semibold text-gray-900">Active Agents</h2>
+        <h2 className="text-lg font-semibold text-gray-900">Archived Agents</h2>
+        <p className="text-gray-500 mt-1">Agents who are no longer active in the system</p>
       </div>
 
-      <AgentTable agents={agents} />
+      <AgentTable agents={filteredAgents} />
     </div>
   );
 };
 
-export default Agents;
+export default AchievedAgents;
