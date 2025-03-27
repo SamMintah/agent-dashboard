@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Search, Filter, Package, ShoppingCart, Activity, ArrowUp, ArrowDown, DollarSign, X, CheckCircle, Clock, AlertTriangle, Truck } from 'lucide-react';
 
 // Union type for modal content
@@ -356,6 +357,7 @@ const getStatusColor = (status: string) => {
 };
 
 const Commodities = () => {
+  const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('inventory');
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('all');
@@ -376,14 +378,16 @@ const Commodities = () => {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-semibold text-gray-900">Commodities</h1>
-        <div className="flex space-x-2">
+      <h1 className="text-2xl font-semibold text-gray-900 mb-6">Commodities</h1>
+      
+      {/* Horizontal tabs */}
+      <div className="border-b border-gray-200 mb-6">
+        <div className="flex space-x-4">
           <button
-            className={`px-4 py-2 rounded-lg ${
+            className={`px-6 py-3 text-sm font-medium ${
               activeTab === 'inventory'
-                ? 'bg-blue-600 text-white'
-                : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                ? 'text-blue-600 border-b-2 border-blue-600 bg-blue-50'
+                : 'text-gray-500 hover:text-gray-700 hover:bg-gray-50'
             }`}
             onClick={() => setActiveTab('inventory')}
           >
@@ -393,23 +397,23 @@ const Commodities = () => {
             </div>
           </button>
           <button
-            className={`px-4 py-2 rounded-lg ${
+            className={`px-6 py-3 text-sm font-medium ${
               activeTab === 'requests'
-                ? 'bg-blue-600 text-white'
-                : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                ? 'text-blue-600 border-b-2 border-blue-600 bg-blue-50'
+                : 'text-gray-500 hover:text-gray-700 hover:bg-gray-50'
             }`}
             onClick={() => setActiveTab('requests')}
           >
             <div className="flex items-center">
-            <ShoppingCart className="w-5 h-5 mr-2" />
+              <ShoppingCart className="w-5 h-5 mr-2" />
               New Requests
             </div>
           </button>
           <button
-            className={`px-4 py-2 rounded-lg ${
+            className={`px-6 py-3 text-sm font-medium ${
               activeTab === 'orders'
-                ? 'bg-blue-600 text-white'
-                : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                ? 'text-blue-600 border-b-2 border-blue-600 bg-blue-50'
+                : 'text-gray-500 hover:text-gray-700 hover:bg-gray-50'
             }`}
             onClick={() => setActiveTab('orders')}
           >
@@ -420,6 +424,9 @@ const Commodities = () => {
           </button>
         </div>
       </div>
+      
+      {/* Main content area */}
+      <div>
 
 
       {/* Commodity Detail Modal */}
@@ -584,7 +591,7 @@ const Commodities = () => {
         </div>
       )}
 
-      <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-200">
+          <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-200">
         <div className="flex flex-col sm:flex-row gap-4 mb-6">
           <div className="flex-1">
             <div className="relative">
@@ -828,7 +835,15 @@ const Commodities = () => {
               })()}
             </div>
             
-            <h3 className="text-lg font-medium text-gray-900 mt-6 mb-3">Recent Orders</h3>
+            <div className="flex justify-between items-center mt-6 mb-3">
+              <h3 className="text-lg font-medium text-gray-900">Recent Orders</h3>
+              <button 
+                className="text-sm text-blue-600 hover:text-blue-700 font-medium"
+                onClick={() => navigate('/commodities/orders')}
+              >
+                View All
+              </button>
+            </div>
             <div className="space-y-4">
               {orders.map((order) => (
                 <div 
@@ -864,6 +879,7 @@ const Commodities = () => {
             </div>
           </div>
         )}
+          </div>
       </div>
     </div>
   );

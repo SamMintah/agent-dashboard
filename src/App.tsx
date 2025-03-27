@@ -15,6 +15,7 @@ import Reports from './pages/Reports';
 import Settings from './pages/Settings';
 import Help from './pages/Help';
 import Commodities from './pages/Commodities';
+import AllOrders from './pages/AllOrders';
 
 function App() {
   return (
@@ -38,6 +39,7 @@ function App() {
               <Route path="/settings" element={<Settings />} />
               <Route path="/help" element={<Help />} />
               <Route path="/commodities" element={<Commodities />} />
+              <Route path="/commodities/orders" element={<AllOrders />} />
             </Routes>
           </main>
         </div>
