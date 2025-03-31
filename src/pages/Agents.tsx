@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Search, Filter, Plus, MapPin, Calendar, Briefcase, Shield, PenTool as Tool, Users as UsersIcon } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import Pagination from '../components/Pagination';
 
 interface Project {
   id: number;
@@ -219,6 +220,15 @@ const Agents = () => {
   const [selectedVerification, setSelectedVerification] = useState('All Verification');
   const [selectedContract, setSelectedContract] = useState('All Contracts');
   const [searchQuery, setSearchQuery] = useState('');
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 2;
+  
+  const filteredAgents = agents.filter(agent => 
+    agent.name.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+  const indexOfLastAgent = currentPage * itemsPerPage;
+  const indexOfFirstAgent = indexOfLastAgent - itemsPerPage;
+  const currentAgents = filteredAgents.slice(indexOfFirstAgent, indexOfLastAgent);
 
   return (
     <div className="space-y-6">
@@ -300,12 +310,14 @@ const Agents = () => {
           </div>
         </div>
       </div>
-
-      <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-200 mb-6">
-        <h2 className="text-lg font-semibold text-gray-900">Active Agents</h2>
-      </div>
-
-      <AgentTable agents={agents} />
+      <AgentTable agents={currentAgents} />
+      {filteredAgents.length > 0 && (
+        <Pagination
+          currentPage={currentPage}
+          totalPages={Math.ceil(filteredAgents.length / itemsPerPage)}
+          onPageChange={(page) => setCurrentPage(page)}
+        />
+      )}
     </div>
   );
 };

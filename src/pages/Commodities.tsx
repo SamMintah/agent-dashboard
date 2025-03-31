@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Search, Filter, Package, ShoppingCart, Activity, ArrowUp, ArrowDown, DollarSign, X, CheckCircle, Clock, AlertTriangle, Truck } from 'lucide-react';
+import Pagination from '../components/Pagination';
 
 // Union type for modal content
 type ModalContentType = InventoryItem | AgentCommodity | AgentOrder | null;
@@ -365,6 +366,25 @@ const Commodities = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedCommodity, setSelectedCommodity] = useState<ModalContentType>(null);
   
+  // Pagination states
+  const [currentInvPage, setCurrentInvPage] = useState(1);
+  const [currentReqPage, setCurrentReqPage] = useState(1);
+  const [currentOrderPage, setCurrentOrderPage] = useState(1);
+  const itemsPerPage = 3;
+  
+  // Compute current items for each tab
+  const indexOfLastInvItem = currentInvPage * itemsPerPage;
+  const indexOfFirstInvItem = indexOfLastInvItem - itemsPerPage;
+  const currentInventory = inventory.slice(indexOfFirstInvItem, indexOfLastInvItem);
+  
+  const indexOfLastReqItem = currentReqPage * itemsPerPage;
+  const indexOfFirstReqItem = indexOfLastReqItem - itemsPerPage;
+  const currentAgentCommodities = agentCommodities.slice(indexOfFirstReqItem, indexOfLastReqItem);
+  
+  const indexOfLastOrderItem = currentOrderPage * itemsPerPage;
+  const indexOfFirstOrderItem = indexOfLastOrderItem - itemsPerPage;
+  const currentOrders = orders.slice(indexOfFirstOrderItem, indexOfLastOrderItem);
+  
   const openCommodityModal = (item: ModalContentType) => {
     console.log('Opening modal for item:', item);
     setSelectedCommodity(item);
@@ -380,9 +400,10 @@ const Commodities = () => {
     <div className="space-y-6">
       <h1 className="text-2xl font-semibold text-gray-900 mb-6">Commodities</h1>
       
-      {/* Horizontal tabs */}
-      <div className="border-b border-gray-200 mb-6">
-        <div className="flex space-x-4">
+      {/* Tab Navigation and Content Card */}
+      <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+        {/* Horizontal tabs */}
+        <div className="flex border-b border-gray-200">
           <button
             className={`px-6 py-3 text-sm font-medium ${
               activeTab === 'inventory'
@@ -423,10 +444,9 @@ const Commodities = () => {
             </div>
           </button>
         </div>
-      </div>
-      
-      {/* Main content area */}
-      <div>
+        
+        {/* Tab Content */}
+        <div className="p-6">
 
 
       {/* Commodity Detail Modal */}
@@ -591,7 +611,6 @@ const Commodities = () => {
         </div>
       )}
 
-          <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-200">
         <div className="flex flex-col sm:flex-row gap-4 mb-6">
           <div className="flex-1">
             <div className="relative">
@@ -648,7 +667,7 @@ const Commodities = () => {
                 </tr>
               </thead>
               <tbody>
-                {inventory.map((item) => (
+                {currentInventory.map((item) => (
                   <tr 
                     key={item.id} 
                     className="border-b border-gray-100 last:border-0 cursor-pointer hover:bg-gray-50"
@@ -697,6 +716,13 @@ const Commodities = () => {
                 ))}
               </tbody>
             </table>
+            <div className="mt-4">
+              <Pagination
+                currentPage={currentInvPage}
+                totalPages={Math.ceil(inventory.length / itemsPerPage)}
+                onPageChange={(page) => setCurrentInvPage(page)}
+              />
+            </div>
           </div>
         )}
 
@@ -716,7 +742,7 @@ const Commodities = () => {
                 </tr>
               </thead>
               <tbody>
-                {agentCommodities.map((commodity) => (
+                {currentAgentCommodities.map((commodity) => (
                   <tr 
                     key={commodity.id} 
                     className="border-b border-gray-100 last:border-0 cursor-pointer hover:bg-gray-50"
@@ -765,6 +791,13 @@ const Commodities = () => {
                 ))}
               </tbody>
             </table>
+            <div className="mt-4">
+              <Pagination
+                currentPage={currentReqPage}
+                totalPages={Math.ceil(agentCommodities.length / itemsPerPage)}
+                onPageChange={(page) => setCurrentReqPage(page)}
+              />
+            </div>
           </div>
         )}
 
@@ -845,7 +878,7 @@ const Commodities = () => {
               </button>
             </div>
             <div className="space-y-4">
-              {orders.map((order) => (
+              {currentOrders.map((order) => (
                 <div 
                   key={order.id} 
                   className="flex items-center justify-between p-4 border border-gray-100 rounded-lg bg-white cursor-pointer hover:bg-gray-50"
@@ -877,9 +910,16 @@ const Commodities = () => {
                 </div>
               ))}
             </div>
+            <div className="mt-4">
+              <Pagination
+                currentPage={currentOrderPage}
+                totalPages={Math.ceil(orders.length / itemsPerPage)}
+                onPageChange={(page) => setCurrentOrderPage(page)}
+              />
+            </div>
           </div>
         )}
-          </div>
+        </div>
       </div>
     </div>
   );

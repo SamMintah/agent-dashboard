@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Download, DollarSign, TrendingUp, AlertCircle, CreditCard, BarChart2, TrendingDown } from 'lucide-react';
+import Pagination from '../components/Pagination';
 import {
   BarChart,
   Bar,
@@ -123,6 +124,21 @@ const commodityTrends = [
 
 const Financials = () => {
   const [activeTab, setActiveTab] = useState('inputs');
+  const [currentLoanPage, setCurrentLoanPage] = useState(1);
+  const [currentTransPage, setCurrentTransPage] = useState(1);
+  
+  const loansPerPage = 3;
+  const transactionsPerPage = 3;
+  
+  // Calculate current loans to display
+  const indexOfLastLoan = currentLoanPage * loansPerPage;
+  const indexOfFirstLoan = indexOfLastLoan - loansPerPage;
+  const currentLoans = loanData.slice(indexOfFirstLoan, indexOfLastLoan);
+  
+  // Calculate current transactions to display
+  const indexOfLastTrans = currentTransPage * transactionsPerPage;
+  const indexOfFirstTrans = indexOfLastTrans - transactionsPerPage;
+  const currentTransactions = transactions.slice(indexOfFirstTrans, indexOfLastTrans);
 
   const handleTabChange = (tab: string) => {
     setActiveTab(tab);
@@ -183,6 +199,13 @@ const Financials = () => {
         <div className="p-6">
           {activeTab === 'inputs' && (
             <div className="space-y-6">
+              <div className="mt-4 p-4 bg-blue-50 rounded-lg border border-blue-100">
+                <h4 className="text-sm font-medium text-blue-800 mb-2">Loan Distribution Insights</h4>
+                <p className="text-sm text-blue-700">
+                  Fertilizer loans have increased by 15% this quarter, while equipment financing requests 
+                  have decreased by 8%. The average loan amount has grown by GHS 750 compared to last quarter.
+                </p>
+              </div>
               <div className="flex items-center justify-between">
                 <h2 className="text-lg font-semibold text-gray-900">Input Loans</h2>
                 <div className="flex items-center gap-2 text-sm text-gray-500">
@@ -237,7 +260,7 @@ const Financials = () => {
                     </tr>
                   </thead>
                   <tbody>
-                    {loanData.map((loan) => (
+                    {currentLoans.map((loan) => (
                       <tr key={loan.id} className="border-b border-gray-100 last:border-0">
                         <td className="py-3 text-sm text-gray-900">
                           {new Date(loan.date).toLocaleDateString()}
@@ -263,18 +286,25 @@ const Financials = () => {
                 </table>
               </div>
               
-              <div className="mt-4 p-4 bg-blue-50 rounded-lg border border-blue-100">
-                <h4 className="text-sm font-medium text-blue-800 mb-2">Loan Distribution Insights</h4>
-                <p className="text-sm text-blue-700">
-                  Fertilizer loans have increased by 15% this quarter, while equipment financing requests 
-                  have decreased by 8%. The average loan amount has grown by GHS 750 compared to last quarter.
-                </p>
-              </div>
+              {/* Pagination for Loan Applications */}
+              <Pagination 
+                currentPage={currentLoanPage} 
+                totalPages={Math.ceil(loanData.length / loansPerPage)} 
+                onPageChange={setCurrentLoanPage} 
+              />
             </div>
           )}
 
           {activeTab === 'commodities' && (
             <div className="space-y-6">
+                  <div className="mt-4 p-4 bg-blue-50 rounded-lg border border-blue-100">
+                <h4 className="text-sm font-medium text-blue-800 mb-2">Market Insights</h4>
+                <p className="text-sm text-blue-700">
+                  Coffee prices continue their upward trend due to supply constraints in major producing regions. 
+                  Maize has shown steady growth this quarter, while rice prices have experienced minor volatility 
+                  due to changing export policies in key Asian markets.
+                </p>
+              </div>
               <div className="flex items-center justify-between">
                 <h2 className="text-lg font-semibold text-gray-900">Commodity Pricing</h2>
                 <div className="text-sm text-gray-500">
@@ -344,6 +374,13 @@ const Financials = () => {
                   </tbody>
                 </table>
               </div>
+                
+                  {/* Pagination for Transactions */}
+                  <Pagination 
+                currentPage={currentTransPage} 
+                totalPages={Math.ceil(transactions.length / transactionsPerPage)} 
+                onPageChange={setCurrentTransPage} 
+              />
               
               <div className="mt-6">
                 <h3 className="text-md font-medium text-gray-900 mb-3">Price Trends (Q1 2024)</h3>
@@ -361,20 +398,18 @@ const Financials = () => {
                   </ResponsiveContainer>
                 </div>
               </div>
-              
-              <div className="mt-4 p-4 bg-blue-50 rounded-lg border border-blue-100">
-                <h4 className="text-sm font-medium text-blue-800 mb-2">Market Insights</h4>
-                <p className="text-sm text-blue-700">
-                  Coffee prices continue their upward trend due to supply constraints in major producing regions. 
-                  Maize has shown steady growth this quarter, while rice prices have experienced minor volatility 
-                  due to changing export policies in key Asian markets.
-                </p>
-              </div>
             </div>
           )}
 
           {activeTab === 'commissions' && (
             <div className="space-y-6">
+               <div className="mt-4 p-4 bg-blue-50 rounded-lg border border-blue-100">
+                <h4 className="text-sm font-medium text-blue-800 mb-2">Commission Insights</h4>
+                <p className="text-sm text-blue-700">
+                  Eastern region agents have shown the highest performance this quarter with 28% of total commissions. 
+                  Sales commissions continue to be the primary earnings source, accounting for 65% of all payouts.
+                </p>
+              </div>
               <div className="flex items-center justify-between">
                 <h2 className="text-lg font-semibold text-gray-900">Agent Commissions</h2>
                 <div className="flex items-center gap-4">
@@ -438,7 +473,7 @@ const Financials = () => {
                     </tr>
                   </thead>
                   <tbody>
-                    {transactions.map((transaction) => (
+                    {currentTransactions.map((transaction) => (
                       <tr key={transaction.id} className="border-b border-gray-100 last:border-0">
                         <td className="py-4 text-sm text-gray-900">
                           {new Date(transaction.date).toLocaleDateString()}
@@ -463,14 +498,15 @@ const Financials = () => {
                   </tbody>
                 </table>
               </div>
+
+                  {/* Pagination for Transactions */}
+                  <Pagination 
+                currentPage={currentTransPage} 
+                totalPages={Math.ceil(transactions.length / transactionsPerPage)} 
+                onPageChange={setCurrentTransPage} 
+              />
               
-              <div className="mt-4 p-4 bg-blue-50 rounded-lg border border-blue-100">
-                <h4 className="text-sm font-medium text-blue-800 mb-2">Commission Insights</h4>
-                <p className="text-sm text-blue-700">
-                  Eastern region agents have shown the highest performance this quarter with 28% of total commissions. 
-                  Sales commissions continue to be the primary earnings source, accounting for 65% of all payouts.
-                </p>
-              </div>
+             
             </div>
           )}
         </div>

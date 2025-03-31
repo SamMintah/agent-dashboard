@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Search, Filter, Plus, MapPin, Calendar, Briefcase, Shield, PenTool as Tool, Users as UsersIcon } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import Pagination from '../components/Pagination';
 
 interface Project {
   id: number;
@@ -222,6 +223,8 @@ const AchievedAgents = () => {
   const [selectedVerification, setSelectedVerification] = useState('All Verification');
   const [selectedContract, setSelectedContract] = useState('All Contracts');
   const [searchQuery, setSearchQuery] = useState('');
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 2; // Adjust the number as needed or to match other pages
 
   // Filter archived agents based on search query and filters
   const filteredAgents = archivedAgents.filter(agent => {
@@ -237,6 +240,11 @@ const AchievedAgents = () => {
     
     return matchesSearch && matchesRegion && matchesDistrict && matchesStatus && matchesVerification && matchesContract;
   });
+
+  // Pagination logic
+  const indexOfLastAgent = currentPage * itemsPerPage;
+  const indexOfFirstAgent = indexOfLastAgent - itemsPerPage;
+  const currentAgents = filteredAgents.slice(indexOfFirstAgent, indexOfLastAgent);
 
   return (
     <div className="space-y-6">
@@ -314,13 +322,14 @@ const AchievedAgents = () => {
           </div>
         </div>
       </div>
-
-      <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-200 mb-6">
-        <h2 className="text-lg font-semibold text-gray-900">Archived Agents</h2>
-        <p className="text-gray-500 mt-1">Agents who are no longer active in the system</p>
-      </div>
-
-      <AgentTable agents={filteredAgents} />
+      <AgentTable agents={currentAgents} />
+      {filteredAgents.length > 0 && (
+        <Pagination
+          currentPage={currentPage}
+          totalPages={Math.ceil(filteredAgents.length / itemsPerPage)}
+          onPageChange={(page) => setCurrentPage(page)}
+        />
+      )}
     </div>
   );
 };

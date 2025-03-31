@@ -1,5 +1,6 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import ReportOverviewStats from '../components/ReportOverviewStats';
+import Pagination from '../components/Pagination';
 
 // Sample data for agent reports with farmer-related content
 const sampleReportsData = [
@@ -21,6 +22,8 @@ const Reports = () => {
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [reports, setReports] = useState(sampleReportsData);
   const [statsUpdatedAt, setStatsUpdatedAt] = useState<Date>(new Date());
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 5;
   
   // Calculate report statistics
   const reportStats = useMemo(() => {
@@ -54,6 +57,11 @@ const Reports = () => {
     setStatsUpdatedAt(new Date());
   }, []);
 
+  // Calculate current page reports
+  const indexOfLastReport = currentPage * itemsPerPage;
+  const indexOfFirstReport = indexOfLastReport - itemsPerPage;
+  const currentReports = reports.slice(indexOfFirstReport, indexOfLastReport);
+  
   // Combined filter function
   const applyFilters = (status: string, query: string) => {
     let filteredReports = sampleReportsData;
@@ -190,7 +198,7 @@ const Reports = () => {
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
-              {reports.map((report) => (
+              {currentReports.map((report) => (
                 <tr key={report.id} className="hover:bg-gray-50">
                   <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
                     #{report.id}
@@ -226,6 +234,15 @@ const Reports = () => {
           </div>
         )}
       </div>
+      
+      {/* Pagination */}
+      {reports.length > itemsPerPage && (
+        <Pagination
+          currentPage={currentPage}
+          totalPages={Math.ceil(reports.length / itemsPerPage)}
+          onPageChange={(page) => setCurrentPage(page)}
+        />
+      )}
     </div>
   );
 };
